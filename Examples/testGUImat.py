@@ -2,8 +2,8 @@
 Author       : Hanqing Qi
 Date         : 2023-11-07 14:34:35
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-07 14:34:36
-FilePath     : /GUI/testGUI.py
+LastEditTime : 2023-11-07 15:56:23
+FilePath     : /GUI/Examples/testGUImat.py
 Description  : The test file for GUI in matplotlib
 """
 
