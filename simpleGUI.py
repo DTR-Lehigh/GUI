@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-07 15:20:18
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-09 15:59:26
+LastEditTime : 2023-11-09 16:41:44
 FilePath     : /GUI/simpleGUI.py
 Description  : The GUI for bicopter control
 """
@@ -208,8 +208,8 @@ class SimpleGUI:
         # Update the roi
         if self.enable_vision:
             # Scale the roi
-            x, y, w, h = self.roi[0] / FRAME_OFFSET[1], self.roi[1] / FRAME_OFFSET[1], self.roi[2] / FRAME_OFFSET[1], self.roi[3] / FRAME_OFFSET[1]
-            self.roi_rect.set_xy((FRAME_OFFSET[0] + x, y))
+            x, y, w, h = self.roi[0] / FRAME_OFFSET[1], (FRAME_SIZE[1] - self.roi[1]) / FRAME_OFFSET[1], self.roi[2] / FRAME_OFFSET[1], self.roi[3] / FRAME_OFFSET[1]
+            self.roi_rect.set_xy((FRAME_OFFSET[0] + x, y - h))
             self.roi_rect.set_width(w)
             self.roi_rect.set_height(h)
             self.roi_tx.set_text(f"({int(self.roi[0])}, {int(self.roi[1])}, {int(self.roi[2])}, {int(self.roi[3])})")
