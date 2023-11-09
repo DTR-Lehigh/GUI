@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-07 15:20:18
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-08 18:53:24
+LastEditTime : 2023-11-08 22:15:47
 FilePath     : /GUI/simpleGUI.py
 Description  : The GUI for bicopter control
 """
@@ -131,7 +131,7 @@ class SimpleGUI:
         if self.yaw_control_mode:  # Map
             self.cur_yaw, self.des_yaw = cur_yaw, des_yaw
         else:  # Gain
-            self.cur_yaw += cur_yaw
+            self.cur_yaw = cur_yaw
             self.des_yaw += des_yaw
         self.cur_height, self.des_height, self.distance, self.roi, self.batlevel, self.connection = cur_height, des_height, distance, roi, batlevel, connection
 
