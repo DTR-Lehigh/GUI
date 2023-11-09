@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-07 15:20:18
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-09 16:41:44
+LastEditTime : 2023-11-09 18:15:22
 FilePath     : /GUI/simpleGUI.py
 Description  : The GUI for bicopter control
 """
@@ -207,12 +207,22 @@ class SimpleGUI:
 
         # Update the roi
         if self.enable_vision:
+            # Temporarily fix for center
+            center_x = roi[0]
+            center_y = roi[1]
+            x = center_x - roi[2] / 2 
+            y = center_y - roi[3] / 2
             # Scale the roi
-            x, y, w, h = self.roi[0] / FRAME_OFFSET[1], (FRAME_SIZE[1] - self.roi[1]) / FRAME_OFFSET[1], self.roi[2] / FRAME_OFFSET[1], self.roi[3] / FRAME_OFFSET[1]
-            self.roi_rect.set_xy((FRAME_OFFSET[0] + x, y - h))
-            self.roi_rect.set_width(w)
-            self.roi_rect.set_height(h)
-            self.roi_tx.set_text(f"({int(self.roi[0])}, {int(self.roi[1])}, {int(self.roi[2])}, {int(self.roi[3])})")
+            w, h = roi[2], roi[3]
+            # Convert the x,y on frame to x,y on GUI
+            gui_x = FRAME_OFFSET[0] + x / FRAME_OFFSET[1]
+            gui_y = GUI_SIZE[1] - (y + h) / FRAME_OFFSET[1] 
+            gui_w = w / FRAME_OFFSET[1]
+            gui_h = h / FRAME_OFFSET[1]
+            self.roi_rect.set_xy((gui_x, gui_y))
+            self.roi_rect.set_width(gui_w)
+            self.roi_rect.set_height(gui_h)
+            self.roi_tx.set_text(f"({int(x)}, {int(y)}, {int(w)}, {int(h)})")
         else:
             self.roi_rect.set_xy((0, 0))
             self.roi_rect.set_width(0)
@@ -257,7 +267,7 @@ if __name__ == "__main__":
             cur_height = i / 100 * 12.5
             des_height = i / 100 * 12.5
             distance = i / 100 * 500
-            roi = [i / 100 * 240, i / 100 * 160, 240 - i / 100 * 240, 160 - i / 100 * 160]
+            roi = [120, 80, 220, 140]
             batlevel = i / 100 * 4.6
             connection = i % 20 < 10
             flag = mygui.update_interface(cur_yaw=cur_yaw, des_yaw=des_yaw, cur_height=cur_height, des_height=des_height, distance=distance, roi=roi, batlevel=batlevel, connection=connection)
@@ -274,7 +284,7 @@ if __name__ == "__main__":
             cur_height = i / 100 * 12.5
             des_height = i / 100 * 12.5
             distance = i / 100 * 500
-            roi = [i / 100 * 240, i / 100 * 160, 240 - i / 100 * 240, 160 - i / 100 * 160]
+            roi = [120, 80, 220, 140]
             batlevel = i / 100 * 4.6
             connection = i % 20 < 10
             flag = mygui.update_interface(cur_yaw=cur_yaw, des_yaw=des_yaw, cur_height=cur_height, des_height=des_height, distance=distance, roi=roi, batlevel=batlevel, connection=connection)
