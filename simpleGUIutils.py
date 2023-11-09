@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-08 00:15:24
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-08 18:53:40
+LastEditTime : 2023-11-09 15:59:54
 FilePath     : /GUI/simpleGUIutils.py
 Description  : Some functions for the simpleGUI.py
 """
@@ -17,8 +17,8 @@ import math
 GUI_SIZE = [20, 6]
 CURRENT_HEIGHT_BAR = [9, 12.5 / 6]  # X, Scale
 DESIRED_HEIGHT_BAR = [10, 12.5 / 6]  # X, Scale
-WALL_SENSOR_BAR = [0, 100]  # X, Scale
-BATTARY_INDICATOR = [4.2, 4.2 / 1.6, [3.8, 3.5, 3.2]]  # Y, Scale, level thresholds
+WALL_SENSOR_BAR = [0, 100, 20]  # X, Scale, moving average window size
+BATTARY_INDICATOR = [4.2, 4.6 / 1.6, [3.8, 3.5, 3.2], 10]  # Y, Scale, level thresholds, moving average window size
 FRAME_SIZE = [240, 160]
 FRAME_OFFSET = [12, FRAME_SIZE[1] / GUI_SIZE[1]]
 BAR_WIDTH = 1
@@ -268,8 +268,8 @@ def wsma_callback(self, event):
     if self.moving_average_distance:
         self.wsma.color = COLORS["green"]
         self.wsma.hovercolor = COLORS["green"] + "AF"
-        # self.wsma.label.set_text("Smooth\non")
-        self.wsma.label.set_text("TODO")
+        self.wsma.label.set_text("Smooth\non")
+        # self.wsma.label.set_text("TODO")
     else:
         self.wsma.color = COLORS["orange"]
         self.wsma.hovercolor = COLORS["orange"] + "AF"
@@ -281,14 +281,36 @@ def bma_callback(self, event):
         return
     self.moving_average_battary = not self.moving_average_battary
     if self.moving_average_battary:
+        self.battery_history = []
         self.bma.color = COLORS["green"]
         self.bma.hovercolor = COLORS["green"] + "AF"
-        # self.bma.label.set_text("Smooth\non")
-        self.bma.label.set_text("TODO")
+        self.bma.label.set_text("Smooth\non")
+        # self.bma.label.set_text("TODO")
     else:
+        self.battery_history = []
         self.bma.color = COLORS["orange"]
         self.bma.hovercolor = COLORS["orange"] + "AF"
         self.bma.label.set_text("Smooth\noff")
+
+
+def battery_moving_average(self, new_battery_level):
+    if(len(self.battery_history) < BATTARY_INDICATOR[3]):
+        self.battery_history.append(new_battery_level)
+        return np.mean(self.battery_history)
+    else:
+        self.battery_history.pop(0)
+        self.battery_history.append(new_battery_level)
+        return np.mean(self.battery_history)
+
+
+def distance_moving_average(self, new_distance):
+    if(len(self.distance_history) < WALL_SENSOR_BAR[2]):
+        self.distance_history.append(new_distance)
+        return np.mean(self.distance_history)
+    else:
+        self.distance_history.pop(0)
+        self.distance_history.append(new_distance)
+        return np.mean(self.distance_history)
 
 
 def add_ticks_circle(self, center_x: float, center_y: float, radius: float) -> None:
@@ -364,11 +386,11 @@ def update_yaw_offset(self, val):
 
 def update_height_offset(self, val):
     self.height_offset = val
-    cur_height_temp = (self.cur_height + self.height_offset) / CURRENT_HEIGHT_BAR[1]
+    cur_height_temp = (self.cur_height) / CURRENT_HEIGHT_BAR[1]
     des_height_temp = (self.des_height + self.height_offset) / DESIRED_HEIGHT_BAR[1]
     self.cur_height_tx.set_text(f"C {self.cur_height:.2f}")  # Current height
     self.cur_height_tx.set_position((CURRENT_HEIGHT_BAR[0] + BAR_WIDTH, cur_height_temp))  # , horizontalalignment='right')
-    self.des_height_tx.set_text(f"D {(self.des_height):.2f}")
+    self.des_height_tx.set_text(f"D {(self.des_height + self.height_offset):.2f}")
     self.des_height_tx.set_position((DESIRED_HEIGHT_BAR[0] + BAR_WIDTH, des_height_temp))  # , horizontalalignment='right')
 
 

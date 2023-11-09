@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-07 15:20:18
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-08 22:15:47
+LastEditTime : 2023-11-09 15:59:26
 FilePath     : /GUI/simpleGUI.py
 Description  : The GUI for bicopter control
 """
@@ -104,6 +104,7 @@ class SimpleGUI:
         self.roi = [0, 0, 0, 0]
         self.batlevel = 0
         self.connection = 0
+        self.sleep(0.1)
 
     def _close_callback(self, event):
         self.flag = -1
@@ -165,12 +166,14 @@ class SimpleGUI:
         update_yaw_offset(self, self.yaw_offset)
 
         # Update the heights
-        self.cur_height_bar[0].set_height((cur_height + self.height_offset) / CURRENT_HEIGHT_BAR[1] if (cur_height + self.height_offset) > 0 else 0)
+        self.cur_height_bar[0].set_height((cur_height) / CURRENT_HEIGHT_BAR[1] if (cur_height) > 0 else 0)
         self.des_height_bar[0].set_height((des_height + self.height_offset) / DESIRED_HEIGHT_BAR[1] if (des_height + self.height_offset) > 0 else 0)
         update_height_offset(self, self.height_offset)
 
         # Update the distance
         if self.enable_wall_sensor:
+            if self.moving_average_distance:
+                self.distance = distance_moving_average(self, self.distance)
             self.wall_sensor_bar[0].set_height(self.distance / WALL_SENSOR_BAR[1] if self.distance >= 0 else 0)
             self.distance_tx.set_text(f"{(self.distance):.2f}")
             self.distance_tx.set_position((WALL_SENSOR_BAR[0] + BAR_WIDTH, self.distance / WALL_SENSOR_BAR[1]))  # , horizontalalignment='right')
@@ -181,6 +184,9 @@ class SimpleGUI:
 
         # Update the battery
         if self.enable_battry:
+            self.batlevel = min(self.batlevel, 4.6)
+            if self.moving_average_battary:
+                self.batlevel = battery_moving_average(self, self.batlevel)
             self.battery_indicator[0].set_width(self.batlevel / BATTARY_INDICATOR[1] if self.batlevel >= 0 else 0)
             if self.batlevel > BATTARY_INDICATOR[2][0]:
                 self.battery_indicator[0].set_color(COLORS["green"])
@@ -252,8 +258,8 @@ if __name__ == "__main__":
             des_height = i / 100 * 12.5
             distance = i / 100 * 500
             roi = [i / 100 * 240, i / 100 * 160, 240 - i / 100 * 240, 160 - i / 100 * 160]
-            batlevel = i / 100 * 4.2
-            connection = (i % 20 < 10)
+            batlevel = i / 100 * 4.6
+            connection = i % 20 < 10
             flag = mygui.update_interface(cur_yaw=cur_yaw, des_yaw=des_yaw, cur_height=cur_height, des_height=des_height, distance=distance, roi=roi, batlevel=batlevel, connection=connection)
             if flag == 0:
                 break
@@ -269,8 +275,8 @@ if __name__ == "__main__":
             des_height = i / 100 * 12.5
             distance = i / 100 * 500
             roi = [i / 100 * 240, i / 100 * 160, 240 - i / 100 * 240, 160 - i / 100 * 160]
-            batlevel = i / 100 * 4.2
-            connection = (i % 20 < 10)
+            batlevel = i / 100 * 4.6
+            connection = i % 20 < 10
             flag = mygui.update_interface(cur_yaw=cur_yaw, des_yaw=des_yaw, cur_height=cur_height, des_height=des_height, distance=distance, roi=roi, batlevel=batlevel, connection=connection)
             if flag == 0:
                 break
