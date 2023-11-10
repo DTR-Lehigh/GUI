@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-10 17:40:20
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-10 17:40:21
+LastEditTime : 2023-11-10 18:34:45
 FilePath     : /GUI/SimpleGUI_V2/simpleGUIparams.py
 Description  : Parameters for the simpleGUI.py
 """
@@ -21,3 +21,15 @@ COLORS = {
     "gray": "#44475A",
     "drak_blue": "#6272A4",
 }
+
+# GUI parameters
+GUI_SIZE = [10, 10]
+FONT_SIZE = 10
+
+# Battery parameters
+BATTERY_NUM = 8
+BATTERY_SIZE = [1.05, 0.5]
+MAX_BATTERY = 4.6
+BATTERY_RATIO = BATTERY_SIZE[0] / MAX_BATTERY
+BATTERY_OFFSET = [0.1, 0.2, 0.1] # [left, middle, right]
+BATTERY_THRESHOLD = [4, 3.7, 3.4]
