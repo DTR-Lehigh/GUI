@@ -1,41 +1,59 @@
 """
 Author       : Hanqing Qi
-Date         : 2023-11-08 00:15:24
+Date         : 2023-11-11 14:47:43
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-09 15:59:54
-FilePath     : /GUI/simpleGUIutils.py
-Description  : Some functions for the simpleGUI.py
+LastEditTime : 2023-11-11 15:51:25
+FilePath     : /GUI/SimpleGUI_V3/simpleGUIutils.py
+Description  : Some functions for the simpleGUI V3  
 """
 
 import matplotlib.widgets as widgets
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
+from simpleGUIparams import *
 import numpy as np
 import math
 
-# Macros
-GUI_SIZE = [20, 6]
-CURRENT_HEIGHT_BAR = [9, 12.5 / 6]  # X, Scale
-DESIRED_HEIGHT_BAR = [10, 12.5 / 6]  # X, Scale
-WALL_SENSOR_BAR = [0, 100, 20]  # X, Scale, moving average window size
-BATTARY_INDICATOR = [4.2, 4.6 / 1.6, [3.8, 3.5, 3.2], 10]  # Y, Scale, level thresholds, moving average window size
-FRAME_SIZE = [240, 160]
-FRAME_OFFSET = [12, FRAME_SIZE[1] / GUI_SIZE[1]]
-BAR_WIDTH = 1
-DEBUG_HEIGHT = 2
-## Colors
-COLORS = {
-    "red": "#FF5555",
-    "green": "#50FA7B",
-    "yellow": "#F1FA8C",
-    "purple": "#BD93F9",
-    "orange": "#FFB86C",
-    "cyan": "#8BE9FD",
-    "pink": "#FF79C6",
-    "white": "#F8F8F2",
-    "black": "#282A36",
-    "gray": "#44475A",
-}
+
+# Initialize the yaw circle
+def init_yaw(self) -> None:
+    # Plot
+    center_dot = self.ax.scatter(YC[0], YC[1], s=40, color=C["w"], zorder=3)
+    self.ax.add_patch(patches.Circle(YC, YR, fill=False, color=C["w"], linewidth=LW, zorder=1))
+    add_ticks_circle(self)
+    self.current_yaw = self.ax.arrow(YC[0], YC[1], 0, 0.8 * YR, head_width=0.1 * YR, head_length=0.2 * YR, fc=C["g"], ec=C["g"], linewidth=LW, zorder=2)
+    self.desired_yaw = self.ax.arrow(YC[0], YC[1], 0, 0.8 * YR, head_width=0.1 * YR, head_length=0.2 * YR, fc=C["r"], ec=C["r"], linewidth=LW, zorder=2)
+    # Text
+    self.ax.text(YC[0], YP[0], "Yaw", fontsize=FS, color=C["w"], ha="center", va="center")  # Yaw
+    self.current_yaw_tx = self.ax.text(YC[0], (YS[1] - YOF[1]) * 1.1, "Current: 0˚", fontsize=FS, color=C["g"], ha="center", va="center")  # Current yaw text
+    self.desired_yaw_tx = self.ax.text(YC[0], (YS[1] - YOF[1]) * 1.01, "Desired: 0˚", fontsize=FS, color=C["r"], ha="center", va="center")  # Desired yaw text
+
+
+# Update the yaw circle
+def update_yaw(self, cur_yaw: float, des_yaw: float) -> None:
+    x1, y1 = YR * 0.8 * np.cos(cur_yaw), YR * 0.8 * np.sin(cur_yaw)  # Current yaw arrow head coordinates
+    x2, y2 = YR * 0.8 * np.cos(des_yaw), YR * 0.8 * np.sin(des_yaw)  # Desired yaw arrow head coordinates
+    self.current_yaw.remove()  # Remove the old arrow
+    self.desired_yaw.remove()  # Remove the old arrow
+    self.current_yaw = self.ax.arrow(YC[0], YC[1], x1, y1, head_width=0.1 * YR, head_length=0.2 * YR, fc=C["g"], ec=C["g"], linewidth=LW, zorder=2)
+    self.desired_yaw = self.ax.arrow(YC[0], YC[1], x2, y2, head_width=0.1 * YR, head_length=0.2 * YR, fc=C["r"], ec=C["r"], linewidth=LW, zorder=2)
+    self.current_yaw_tx.set_text(f"Current: {np.degrees(cur_yaw):.2f}˚")  # Current yaw
+    self.desired_yaw_tx.set_text(f"Desired: {np.degrees(des_yaw):.2f}˚")  # Desired yaw
+
+def add_ticks_circle(self) -> None:
+    emphasized_angles = [0, 90, 180, 270]
+    for angle in range(0, 360, 10):
+        radian = np.radians(angle)
+        start_x = YC[0] + YR * np.cos(radian)
+        start_y = YC[1] + YR * np.sin(radian)
+        if angle in emphasized_angles:
+            end_x = YC[0] + (YR * 0.85) * np.cos(radian)
+            end_y = YC[1] + (YR * 0.85) * np.sin(radian)
+            self.ax.plot([start_x, end_x], [start_y, end_y], color=C["w"], linewidth=LW, zorder=1)
+        else:
+            end_x = YC[0] + (YR * 0.925) * np.cos(radian)
+            end_y = YC[1] + (YR * 0.925) * np.sin(radian)
+            self.ax.plot([start_x, end_x], [start_y, end_y], color=C["w"], linewidth=LW, zorder=1)
 
 
 def init_circles(self, add_tick: bool = True) -> None:
@@ -294,7 +312,7 @@ def bma_callback(self, event):
 
 
 def battery_moving_average(self, new_battery_level):
-    if(len(self.battery_history) < BATTARY_INDICATOR[3]):
+    if len(self.battery_history) < BATTARY_INDICATOR[3]:
         self.battery_history.append(new_battery_level)
         return np.mean(self.battery_history)
     else:
@@ -304,38 +322,13 @@ def battery_moving_average(self, new_battery_level):
 
 
 def distance_moving_average(self, new_distance):
-    if(len(self.distance_history) < WALL_SENSOR_BAR[2]):
+    if len(self.distance_history) < WALL_SENSOR_BAR[2]:
         self.distance_history.append(new_distance)
         return np.mean(self.distance_history)
     else:
         self.distance_history.pop(0)
         self.distance_history.append(new_distance)
         return np.mean(self.distance_history)
-
-
-def add_ticks_circle(self, center_x: float, center_y: float, radius: float) -> None:
-    """
-    @description: Add ticks to the yaw circle
-    @param       {*} self:
-    @param       {float} center_x: The x value of the center of the circle
-    @param       {float} center_y: The y value of the center of the circle
-    @param       {float} radius: The radius of the circle
-    @return      {*} None
-    """
-    emphasized_angles = [0, 90, 180, 270]
-
-    for angle in range(0, 360, 5):
-        radian = np.radians(angle)
-        start_x = center_x + radius * np.cos(radian)
-        start_y = center_y + radius * np.sin(radian)
-        if angle in emphasized_angles:
-            end_x = center_x + (radius - 0.4) * np.cos(radian)
-            end_y = center_y + (radius - 0.4) * np.sin(radian)
-            self.ax.plot([start_x, end_x], [start_y, end_y], color=COLORS["white"], linewidth=2)
-        else:
-            end_x = center_x + (radius - 0.2) * np.cos(radian)
-            end_y = center_y + (radius - 0.2) * np.sin(radian)
-            self.ax.plot([start_x, end_x], [start_y, end_y], color=COLORS["white"], linewidth=1.5)
 
 
 def add_ticks_bar(self, left_edge: float) -> None:
