@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-08 00:15:24
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-10 19:54:27
+LastEditTime : 2023-11-11 12:06:30
 FilePath     : /GUI/SimpleGUI_V2/simpleGUIutils.py
 Description  : Some functions for the simpleGUI.py
 """
@@ -28,7 +28,7 @@ def init_batterie(self) -> None:
             )
         )
         self.ax.text(
-            BATTERY_OFFSET[0] + i * (BATTERY_SIZE[0] + BATTERY_OFFSET[1]) + BATTERY_SIZE[0] / 2, 1.05, f"BAT {i+1}", fontsize=FONT_SIZE, color=COLORS["white"], horizontalalignment="center", zorder=2
+            BATTERY_OFFSET[0] + i * (BATTERY_SIZE[0] + BATTERY_OFFSET[1]) + BATTERY_SIZE[0] / 2, 1.05, f"BAT {i+1}", fontsize=FONT_SIZE, color=COLORS["white"], ha="center", zorder=2
         )  # Battery number
         self.batlevel_tx.append(
             self.ax.text(
@@ -37,8 +37,8 @@ def init_batterie(self) -> None:
                 "?V",
                 fontsize=FONT_SIZE,
                 color=COLORS["white"],
-                horizontalalignment="center",
-                verticalalignment="center",
+                ha="center",
+                va="center",
                 zorder=3,
             )
         )  # Battery level
@@ -82,8 +82,8 @@ def init_heights(self) -> None:
                 "0",
                 fontsize=FONT_SIZE,
                 color=COLORS["red"],
-                horizontalalignment="center",
-                verticalalignment="bottom",
+                ha="center",
+                va="bottom",
                 zorder=3,
             )
             self.ax.text(
@@ -92,8 +92,8 @@ def init_heights(self) -> None:
                 "DES",
                 fontsize=FONT_SIZE,
                 color=COLORS["red"],
-                horizontalalignment="center",
-                verticalalignment="top",
+                ha="center",
+                va="top",
                 zorder=3,
             )
         else:
@@ -109,8 +109,8 @@ def init_heights(self) -> None:
                     "0",
                     fontsize=FONT_SIZE,
                     color=COLORS["green"],
-                    horizontalalignment="center",
-                    verticalalignment="bottom",
+                    ha="center",
+                    va="bottom",
                     zorder=3,
                 )
             )
@@ -120,8 +120,8 @@ def init_heights(self) -> None:
                 f"C{i}",
                 fontsize=FONT_SIZE,
                 color=COLORS["green"],
-                horizontalalignment="center",
-                verticalalignment="top",
+                ha="center",
+                va="top",
                 zorder=3,
             )
         add_ticks_bar(self, HEIGHT_BAR_OFFSET[0] + i * (HEIGHT_BAR_SIZE[0] + HEIGHT_BAR_OFFSET[1]))
@@ -132,8 +132,8 @@ def init_heights(self) -> None:
         "Height",
         fontsize=FONT_SIZE,
         color=COLORS["white"],
-        horizontalalignment="center",
-        verticalalignment="bottom",
+        ha="center",
+        va="bottom",
         zorder=3,
     )
 
@@ -180,27 +180,78 @@ def add_ticks_bar(self, left_edge: float) -> None:
 # Initialize the yaw indicator
 def init_yaw(self):
     self.yaw_circles = []
-    self.ax.add_patch(patches.Circle(CENTER, MAX_RADIUS, color=COLORS["white"], fill=False, linewidth=1.5, zorder=15))
     for i in range(CIRCLE_NUM):
-        wedge = patches.Wedge(center=(CENTER[0], CENTER[1]), radius=MAX_RADIUS - , theta1=0, theta2=180, facecolor="blue")
+        radius = MAX_RADIUS - i * YAW_OFFSET[1]
+        self.ax.add_patch(patches.Circle(CENTER, radius, facecolor=COLORS["black"], edgecolor=COLORS["white"], fill=True, linewidth=1.5, zorder=i + 1))
+        self.ax.add_patch(patches.Circle(CENTER, radius, edgecolor=COLORS["white"], fill=False, linewidth=1.5, zorder=i + 3))
+        if i == 0:
+            wedge = patches.Wedge(center=(CENTER[0], CENTER[1]), r=radius, theta1=90, theta2=90, facecolor=COLORS["red"], zorder=i + 2)
+            add_ticks_circle(self, radius, i + 3, lables=True)
+        else:
+            wedge = patches.Wedge(center=(CENTER[0], CENTER[1]), r=radius, theta1=90, theta2=90, facecolor=COLORS["green"], zorder=i + 2)
+            add_ticks_circle(self, radius, i + 3)
         self.yaw_circles.append(wedge)
         self.ax.add_patch(wedge)
+    self.ax.add_patch(patches.Circle(CENTER, MIN_RADIUS, facecolor=COLORS["black"], edgecolor=COLORS["white"], fill=True, linewidth=1.5, zorder=CIRCLE_NUM + 2))
+    self.ax.text(
+        CENTER[0],
+        CENTER[1],
+        "Yaw",
+        fontsize=FONT_SIZE,
+        color=COLORS["white"],
+        ha="center",
+        va="center",
+        zorder=CIRCLE_NUM + 3,
+    )
 
-    add_ticks_circle(self)
+
+# Update the yaw indicator
+def update_yaw(self, yaws: list[float] = [0] * CIRCLE_NUM) -> None:
+    for i in range(len(yaws)):
+        if yaws[i] < 0:
+            theta1 = 90
+            theta2 = 90 - np.degrees(yaws[i])
+        else:
+            theta1 = 90 - np.degrees(yaws[i])
+            theta2 = 90
+        if i == 0:
+            self.yaw_circles[i].set(theta1=theta1, theta2=theta2)
+        else:
+            self.yaw_circles[i].set(theta1=theta1, theta2=theta2)
 
 
-def add_ticks_circle(self, radius: float = MAX_RADIUS) -> None:
-    emphasized_angles = [0, 90, 180, 270]
-
-    for angle in range(0, 360, 5):
+# Add ticks to the yaw indicator
+def add_ticks_circle(self, radius: float = MAX_RADIUS, order: float = 1, lables: bool = False) -> None:
+    for angle in range(0, 360, 10):
         radian = np.radians(angle)
         start_x = CENTER[0] + radius * np.cos(radian)
         start_y = CENTER[1] + radius * np.sin(radian)
-        if angle in emphasized_angles:
-            end_x = CENTER[0] + (radius - 0.15) * np.cos(radian)
-            end_y = CENTER[1] + (radius - 0.15) * np.sin(radian)
-            self.ax.plot([start_x, end_x], [start_y, end_y], color=COLORS["white"], linewidth=1.5)
+        if lables and angle % 30 == 0:
+            theta = angle - 90 
+            theta = theta if theta <= 180 else theta - 360
+            text_rotation = theta
+
+            # Determine the horizontal and vertical alignment
+            ha = "center"
+            va = "center" if theta == 0 or theta == -180 else "bottom" if theta > 0 else "top"
+
+            self.ax.text(
+                CENTER[0] + (radius + YAW_OFFSET[1]) * np.cos(radian),
+                CENTER[1] + (radius + YAW_OFFSET[1]) * np.sin(radian),
+                f"{theta}°",
+                fontsize=FONT_SIZE,
+                color=COLORS["white"],
+                ha=ha,
+                va="top",
+                rotation=text_rotation,
+                rotation_mode="anchor",
+                zorder=order,
+            )
+        if angle % 90 == 0:
+            end_x = CENTER[0] + (radius - YAW_OFFSET[1]) * np.cos(radian)
+            end_y = CENTER[1] + (radius - YAW_OFFSET[1]) * np.sin(radian)
+            self.ax.plot([start_x, end_x], [start_y, end_y], color=COLORS["white"], linewidth=1.5, zorder=order)
         else:
-            end_x = CENTER[0] + (radius - 0.075) * np.cos(radian)
-            end_y = CENTER[1] + (radius - 0.075) * np.sin(radian)
-            self.ax.plot([start_x, end_x], [start_y, end_y], color=COLORS["white"], linewidth=1.5)
+            end_x = CENTER[0] + (radius - YAW_OFFSET[1] / 3) * np.cos(radian)
+            end_y = CENTER[1] + (radius - YAW_OFFSET[1] / 3) * np.sin(radian)
+            self.ax.plot([start_x, end_x], [start_y, end_y], color=COLORS["white"], linewidth=1.5, zorder=order)
