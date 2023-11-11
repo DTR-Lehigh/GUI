@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-11 14:47:43
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-11 15:50:36
+LastEditTime : 2023-11-11 17:09:49
 FilePath     : /GUI/SimpleGUI_V3/simpleGUI.py
 Description  : The GUI for bicopter control V3
 """
@@ -27,9 +27,12 @@ class SimpleGUI:
         self.ax.axis("off")  # Remove axis
 
         init_yaw(self)
+        init_height(self)
+        init_variables(self)
 
-    def update(self, current_yaw, desired_yaw):
-        update_yaw(self, current_yaw, desired_yaw)
+    def update(self):
+        update_yaw(self, math.pi * 0.5,  math.pi * 1.0)
+        update_height(self, 5, 10)
 
 
 if __name__ == "__main__":
@@ -37,6 +40,6 @@ if __name__ == "__main__":
     import math
 
     for i in range(100):
-        mygui.update(math.pi * 0.5, math.pi * 1.0)
+        mygui.update()
     plt.ioff()
     plt.show()

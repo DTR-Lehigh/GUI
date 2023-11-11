@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-11 14:47:43
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-11 15:51:25
+LastEditTime : 2023-11-11 17:10:41
 FilePath     : /GUI/SimpleGUI_V3/simpleGUIutils.py
 Description  : Some functions for the simpleGUI V3  
 """
@@ -40,6 +40,8 @@ def update_yaw(self, cur_yaw: float, des_yaw: float) -> None:
     self.current_yaw_tx.set_text(f"Current: {np.degrees(cur_yaw):.2f}˚")  # Current yaw
     self.desired_yaw_tx.set_text(f"Desired: {np.degrees(des_yaw):.2f}˚")  # Desired yaw
 
+
+# Add ticks to the circle
 def add_ticks_circle(self) -> None:
     emphasized_angles = [0, 90, 180, 270]
     for angle in range(0, 360, 10):
@@ -54,6 +56,62 @@ def add_ticks_circle(self) -> None:
             end_x = YC[0] + (YR * 0.925) * np.cos(radian)
             end_y = YC[1] + (YR * 0.925) * np.sin(radian)
             self.ax.plot([start_x, end_x], [start_y, end_y], color=C["w"], linewidth=LW, zorder=1)
+
+
+# Initialize the height bar
+def init_height(self) -> None:
+    # Plot the debug rectangle of the height bar
+    # self.ax.add_patch(patches.Rectangle(HP, HS[0], HS[1], linewidth=0.5, edgecolor=C["w"], fill=False, zorder=1))
+    cur_bar_center = HP[0] + HOF[0] + HW * 0.5
+    des_bar_center = HP[0] + HOF[0] + HW * 1.5
+    self.cur_height_bar = self.ax.bar(cur_bar_center, 0, HW, color=C["g"], bottom=HOF[1])
+    add_ticks_bar(self, HP[0] + HOF[0])
+    self.des_height_bar = self.ax.bar(des_bar_center, 0, HW, color=C["r"], bottom=HOF[1])
+    add_ticks_bar(self, HP[0] + HOF[0] + HW)
+    # Text
+    self.ax.text(HP[0] + HOF[0] + HW, HP[1] + HS[1] + 0.01, "Height", fontsize=FS, color=C["w"], ha="center", va="center", zorder=1)  # Height
+    self.ax.text(cur_bar_center, HP[1] - 0.01, "Cur", fontsize=FS, color=C["g"], ha="center", va="center")  # Current height
+    self.ax.text(des_bar_center, HP[1] - 0.01, "Des", fontsize=FS, color=C["r"], ha="center", va="center")  # Desired height
+    self.cur_height_tx = self.ax.text(cur_bar_center, HP[1] + HOF[1] + 0.01, 0, fontsize=FS, color=C["g"], ha="center", va="bottom", zorder=3)  # Current height
+    self.des_height_tx = self.ax.text(des_bar_center, HP[1] + HOF[1] + 0.01, 0, fontsize=FS, color=C["r"], ha="center", va="bottom", zorder=3)  # Desired height
+
+
+# Update the height bars
+def update_height(self, cur_height: float, des_height: float) -> None:
+    self.cur_height_bar[0].set_height((cur_height) * HR if (cur_height) > 0 else 0)
+    self.des_height_bar[0].set_height((des_height) * HR if (des_height) > 0 else 0)
+    self.cur_height_tx.set_text(f"{cur_height:.2f}")  # Current height
+    self.cur_height_tx.set_position((HP[0] + HOF[0] + HW * 0.5, HP[1] + HOF[1] + (cur_height) * HR + 0.01))  # Current height
+    self.des_height_tx.set_text(f"{des_height:.2f}")  # Desired height
+    self.des_height_tx.set_position((HP[0] + HOF[0] + HW * 1.5, HP[1] + HOF[1] + (des_height) * HR + 0.01))  # Desired height
+
+
+# Add ticks to the height bar
+def add_ticks_bar(self, left_edge: float) -> None:
+    num_ticks = 30  # Total number of ticks
+    tick_positions = np.linspace(HP[1] + HOF[1], HP[1] + HOF[1] + HH, num_ticks + 1)
+    for i, pos in enumerate(tick_positions):
+        # Calculate the tick's start and end points
+        if i == 0:
+            end_x = left_edge + HW
+            linewidth = 1.5  # Thicker line for the first tick
+        elif i % 10 == 0:  # Long tick every 10 units
+            end_x = left_edge + HW / 3
+            linewidth = 1.5  # Thicker line for long ticks
+        elif i % 5 == 0:  # Middle tick every 5 units
+            end_x = left_edge + HW * 2 / 7
+            linewidth = 1.25  # Slightly thicker line for middle ticks
+        else:  # Regular tick for other units
+            end_x = left_edge + HW / 7
+            linewidth = 1  # Standard line width for regular ticks
+        self.ax.plot([left_edge, end_x], [pos, pos], color=C["w"], linewidth=LW, zorder=2)
+    self.ax.plot([left_edge, left_edge], [HP[1] + HOF[1], HP[1] + HOF[1] + HH], color=C["w"], linewidth=1.5, zorder=2)
+
+
+# Initialize the variables sliders
+def init_variables(self) -> None:
+    # Plot the debug rectangle of the variables sliders
+    self.ax.add_patch(patches.Rectangle(VP, VS[0], VS[1], linewidth=0.5, edgecolor=C["w"], fill=False, zorder=1))
 
 
 def init_circles(self, add_tick: bool = True) -> None:
@@ -329,35 +387,6 @@ def distance_moving_average(self, new_distance):
         self.distance_history.pop(0)
         self.distance_history.append(new_distance)
         return np.mean(self.distance_history)
-
-
-def add_ticks_bar(self, left_edge: float) -> None:
-    """
-    @description: Add ticks to the bar
-    @param       {*} self:
-    @param       {float} left_edge: The x value of the left edge of the bar
-    @return      {*} None
-    """
-    # Define how many ticks and their positions
-    num_ticks = 50  # Total number of ticks
-    tick_positions = np.linspace(0, GUI_SIZE[1], num_ticks + 1)
-
-    for i, pos in enumerate(tick_positions):
-        # Calculate the tick's start and end points
-        if i == 0:
-            end_x = left_edge + BAR_WIDTH
-            linewidth = 1.5  # Thicker line for the first tick
-        elif i % 10 == 0:  # Long tick every 10 units
-            end_x = left_edge + BAR_WIDTH / 3
-            linewidth = 1.5  # Thicker line for long ticks
-        elif i % 5 == 0:  # Middle tick every 5 units
-            end_x = left_edge + BAR_WIDTH * 2 / 9
-            linewidth = 1.25  # Slightly thicker line for middle ticks
-        else:  # Regular tick for other units
-            end_x = left_edge + BAR_WIDTH / 9
-            linewidth = 1  # Standard line width for regular ticks
-        self.ax.plot([left_edge, end_x], [pos, pos], color=COLORS["white"], linewidth=linewidth)
-    self.ax.plot([left_edge, left_edge], [0, GUI_SIZE[1]], color=COLORS["white"], linewidth=1.5)
 
 
 def add_ticks_rect(self) -> None:

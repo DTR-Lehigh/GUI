@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-11 14:54:50
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-11 15:36:56
+LastEditTime : 2023-11-11 17:07:00
 FilePath     : /GUI/SimpleGUI_V3/simpleGUIparams.py
 Description  : Parameters for SimpleGUI V3
 """
@@ -35,12 +35,17 @@ YC = [YP[0] + YS[0] / 2, YP[1] + YS[1] / 2] # Center of yaw indicator
 YR = 0.4 * YS[0] # Radius of yaw indicator
 
 # Height parameters
-HEIGHT_BAR_SIZE = [0.5, 5]
-HEIGHT_BAR_OFFSET = [0.25, 0, 0.25]
-HEIGHT_BAR_NUM = 9
-MAX_HEIGHT = 15
-HEIGHT_BAR_RATIO = HEIGHT_BAR_SIZE[1] / MAX_HEIGHT
-HEIGHT_BAR_HEIGHT = 2
+HP = [0.4 * GS[0], 0] # Position (left bottom corner) of height indicator
+HS = [0.2 * GS[0], 0.4 * GS[0]] # Size of height indicator
+HOF = [0.05 * HS[0], 0.05 * HS[1]] # Offset of height indicator (horizontal, vertical)
+HW = (HS[0] - 2 * HOF[0])/2 # Width of height indicator
+HH = (HS[1] - 2 * HOF[1])
+MAXH = 15 # Maximum height
+HR = (HS[1] - 2 * HOF[1]) / MAXH # Height ratio
+
+# Variables parameters
+VP = [0.6 * GS[0], 0] # Position (left bottom corner) of variables sliders
+VS = [0.4 * GS[0], 0.4 * GS[0]] # Size of variables sliders
 
 
 # Battery parameters
