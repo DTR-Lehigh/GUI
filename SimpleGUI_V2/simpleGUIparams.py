@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-10 17:40:20
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-10 18:34:45
+LastEditTime : 2023-11-10 19:51:40
 FilePath     : /GUI/SimpleGUI_V2/simpleGUIparams.py
 Description  : Parameters for the simpleGUI.py
 """
@@ -24,7 +24,22 @@ COLORS = {
 
 # GUI parameters
 GUI_SIZE = [10, 10]
-FONT_SIZE = 10
+FONT_SIZE = 11
+
+# Height
+HEIGHT_BAR_SIZE = [0.5, 5]
+HEIGHT_BAR_OFFSET = [0.25, 0, 0.25]
+HEIGHT_BAR_NUM = 9
+MAX_HEIGHT = 15
+HEIGHT_BAR_RATIO = HEIGHT_BAR_SIZE[1] / MAX_HEIGHT
+HEIGHT_BAR_HEIGHT = 2
+
+# Heights parameters
+MAX_RADIUS = 2.5
+MIN_RADIUS = 1.15
+CIRCLE_NUM = 9
+HEIGHTS_OFFSET = [0, 0.15, 0]
+CENTER = [7.5, 4.5]
 
 # Battery parameters
 BATTERY_NUM = 8
@@ -33,3 +48,4 @@ MAX_BATTERY = 4.6
 BATTERY_RATIO = BATTERY_SIZE[0] / MAX_BATTERY
 BATTERY_OFFSET = [0.1, 0.2, 0.1] # [left, middle, right]
 BATTERY_THRESHOLD = [4, 3.7, 3.4]
+BATTERY_HEIGHT = 0.5

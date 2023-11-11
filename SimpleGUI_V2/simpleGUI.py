@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-07 15:20:18
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-10 18:34:06
+LastEditTime : 2023-11-10 19:37:06
 FilePath     : /GUI/SimpleGUI_V2/simpleGUI.py
 Description  : The GUI for bicopter control V2
 """
@@ -27,16 +27,20 @@ class SimpleGUI:
         self.ax.set_yticks([])  # Remove y ticks
         self.ax.axis("off")  # Remove axis
 
-        # Battery indicator
-        init_batterie(self)
+        init_heights(self) # Heights indicator
+        init_yaw(self) # Yaw indicator
+        init_batterie(self) # Battery indicator
 
-    def update(self, battery_levels:list[float] = [0]*BATTERY_NUM)->None:
+    def update(self, battery_levels:list[float] = [0]*BATTERY_NUM, heights:list[float] = [0]*HEIGHT_BAR_NUM) -> None:
         update_battery(self, battery_levels)
+        update_heights(self, heights)
 
 if __name__ == "__main__":
     mygui = SimpleGUI()
     for i in range(10):
-        mygui.update([4.6, 4.4, 4.2, 4.0, 3.8, 3.6, 3.4, 3.2])
+        battery_levels = [4.6, 4.4, 4.2, 4.0, 3.8, 3.6, 3.4, 3.2]
+        heights = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        mygui.update(battery_levels, heights)
         plt.pause(0.5)
     plt.ioff()
     plt.show()
