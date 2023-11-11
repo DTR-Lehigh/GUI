@@ -2,8 +2,8 @@
 Author       : Hanqing Qi
 Date         : 2023-11-07 15:20:18
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-11 11:25:40
-FilePath     : /undefined/Users/hanqingqi/Library/CloudStorage/Dropbox/DTR_Lehigh/GUI/SimpleGUI_V2/simpleGUI.py
+LastEditTime : 2023-11-11 14:37:54
+FilePath     : /GUI/SimpleGUI_V2/simpleGUI.py
 Description  : The GUI for bicopter control V2
 """
 
@@ -30,6 +30,7 @@ class SimpleGUI:
         init_heights(self)  # Heights indicator
         init_yaw(self)  # Yaw indicator
         init_batterie(self)  # Battery indicator
+        # init_distance(self) # Distance indicator
 
     def update(self, battery_levels: list[float] = [0] * BATTERY_NUM, heights: list[float] = [0] * HEIGHT_BAR_NUM, yaws: list[float] = [0] * CIRCLE_NUM):
         update_battery(self, battery_levels)

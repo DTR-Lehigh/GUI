@@ -2,8 +2,8 @@
 Author       : Hanqing Qi
 Date         : 2023-11-10 17:40:20
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-11 12:07:08
-FilePath     : /undefined/Users/hanqingqi/Library/CloudStorage/Dropbox/DTR_Lehigh/GUI/SimpleGUI_V2/simpleGUIparams.py
+LastEditTime : 2023-11-11 14:30:50
+FilePath     : /GUI/SimpleGUI_V2/simpleGUIparams.py
 Description  : Parameters for the simpleGUI.py
 """
 
@@ -49,3 +49,12 @@ BATTERY_RATIO = BATTERY_SIZE[0] / MAX_BATTERY
 BATTERY_OFFSET = [0.1, 0.2, 0.1] # [left, middle, right]
 BATTERY_THRESHOLD = [4, 3.7, 3.4]
 BATTERY_HEIGHT = 0.5
+
+# Distance parameters
+DISTANCE_NUM = 8
+DISTANCE_SIZE = [2.4, 0.5]
+MAX_DISTANCE = 5
+DISTANCE_RATIO = DISTANCE_SIZE[0] / MAX_DISTANCE
+DISTANCE_OFFSET = [0.1, 0.2, 0.1] # [left, middle, right]
+DISTANCE_THRESHOLD = [2, 1.5, 1]
+DISTANCE_HEIGHT = [10.5, 11.5]

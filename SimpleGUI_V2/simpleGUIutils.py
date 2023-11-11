@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-08 00:15:24
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-11 12:06:30
+LastEditTime : 2023-11-11 14:35:59
 FilePath     : /GUI/SimpleGUI_V2/simpleGUIutils.py
 Description  : Some functions for the simpleGUI.py
 """
@@ -255,3 +255,32 @@ def add_ticks_circle(self, radius: float = MAX_RADIUS, order: float = 1, lables:
             end_x = CENTER[0] + (radius - YAW_OFFSET[1] / 3) * np.cos(radian)
             end_y = CENTER[1] + (radius - YAW_OFFSET[1] / 3) * np.sin(radian)
             self.ax.plot([start_x, end_x], [start_y, end_y], color=COLORS["white"], linewidth=1.5, zorder=order)
+
+
+# Initialize the distance indicator
+def init_distance(self):
+    self.distance_indicator = []
+    self.distance_tx = []
+    for i in range(len(DISTANCE_HEIGHT)):
+        for j in range(int(DISTANCE_NUM / 2)):
+            self.distance_indicator.append(self.ax.barh(DISTANCE_HEIGHT[i] + DISTANCE_SIZE[1] / 2, 0, DISTANCE_SIZE[1], color=None, left=DISTANCE_OFFSET[0] + j * (DISTANCE_SIZE[0] + DISTANCE_OFFSET[1]), zorder=1))
+            self.ax.add_patch(
+                patches.Rectangle(
+                    (DISTANCE_OFFSET[0] + j * (DISTANCE_SIZE[0] + DISTANCE_OFFSET[1]), DISTANCE_HEIGHT[i]), DISTANCE_SIZE[0], DISTANCE_SIZE[1], linewidth=1.5, edgecolor=COLORS["white"], fill=False, zorder=2
+                )
+            )
+            self.ax.text(
+                DISTANCE_OFFSET[0] + i * (DISTANCE_SIZE[0] + DISTANCE_OFFSET[1]) + DISTANCE_SIZE[0] / 2, 1.05, f"BAT {i+1}", fontsize=FONT_SIZE, color=COLORS["white"], ha="center", zorder=2
+            )  # Battery number
+            self.batlevel_tx.append(
+                self.ax.text(
+                    DISTANCE_OFFSET[0] + i * (DISTANCE_SIZE[0] + DISTANCE_OFFSET[1]) + DISTANCE_SIZE[0] / 2,
+                    DISTANCE_HEIGHT[i] + DISTANCE_SIZE[1] / 2,
+                    "?V",
+                    fontsize=FONT_SIZE,
+                    color=COLORS["white"],
+                    ha="center",
+                    va="center",
+                    zorder=3,
+                )
+            )  # Battery level
