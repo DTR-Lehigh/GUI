@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-11 14:47:43
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-12 14:54:57
+LastEditTime : 2023-11-12 15:56:55
 FilePath     : /GUI/SimpleGUI_V3/simpleGUI.py
 Description  : The GUI for bicopter control V3
 """
@@ -30,18 +30,32 @@ class SimpleGUI:
         init_height(self)
         init_variables(self)
         init_battery(self)
+        init_distance(self)
+        init_connection_status(self)
+        init_buttons(self)
 
-    def update(self):
-        update_yaw(self, math.pi * 0.5,  math.pi * 2.0)
-        update_height(self, 5, 11)
-        update_battery(self, 4.5)
+    def update(self, cur_yaw: float = 0, des_yaw: float = 0, cur_height: float = 0, des_height: float = 0, battery: float = 0, distance: float = 0, connection_status: bool = False):
+        update_yaw(self, cur_yaw, des_yaw)
+        update_height(self, cur_height, des_height)
+        update_battery(self, battery)
+        update_distance(self, distance)
+        update_connection_status(self, connection_status)
 
 
 if __name__ == "__main__":
     mygui = SimpleGUI()
     import math
 
-    for i in range(100):
-        mygui.update()
+    for i in range(101):
+        mygui.update(
+            cur_yaw=math.pi * i / 100,
+            des_yaw=- math.pi * i / 100,
+            cur_height=10 * i / 100,
+            des_height=10 * (1 - i / 100),
+            battery=4.5 * i / 100,
+            distance=500 * i / 100,
+            connection_status=True,
+        )
+        plt.pause(0.05)
     plt.ioff()
     plt.show()

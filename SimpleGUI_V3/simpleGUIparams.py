@@ -2,23 +2,23 @@
 Author       : Hanqing Qi
 Date         : 2023-11-11 14:54:50
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-12 14:48:33
+LastEditTime : 2023-11-12 15:59:11
 FilePath     : /GUI/SimpleGUI_V3/simpleGUIparams.py
 Description  : Parameters for SimpleGUI V3
 """
 
 # Colors
 C = {
-    "r": "#fa7970", # Red
-    "g": "#7ce38b", # Green
-    "o": "#faa356", # Orange
-    "p": "#cea5fb", # Purple
-    "k": "#161b22", # Black
-    "a": "#21262d", # Gray
-    "w": "#ecf2f8", # White
-    "c": "#a2d2fb", # Cyan
-    "b": "#77bdfb", # Blue
-    "y": "#c6cdd5", # Yellow
+    "r": "#fa7970",  # Red
+    "g": "#7ce38b",  # Green
+    "o": "#faa356",  # Orange
+    "p": "#cea5fb",  # Purple
+    "k": "#161b22",  # Black
+    "a": "#21262d",  # Gray
+    "w": "#ecf2f8",  # White
+    "c": "#a2d2fb",  # Cyan
+    "b": "#77bdfb",  # Blue
+    "y": "#c6cdd5",  # Yellow
     # "i": "#FF79C6",
 }
 
@@ -44,33 +44,54 @@ MAXH = 15  # Maximum height
 HR = (HS[1] - 2 * HOF[1]) / MAXH  # Height ratio
 
 # Battery parameters
-BP = [0, 0.8 * GS[1]] # Position (left bottom corner) of battery indicator
-BS = [0.2 * GS[0] , 0.15 * GS[1]] # Size of battery indicator
-MAXB = 4.5 # Maximum battery
+BP = [0, 0.8 * GS[1]]  # Position (left bottom corner) of battery indicator
+BS = [0.2 * GS[0], 0.15 * GS[1]]  # Size of battery indicator
+MAXB = 4.5  # Maximum battery
 BOF = [0.05 * BS[0], 0.1 * BS[1]]  # Offset of battery indicator (horizontal, vertical)
-BTH = [4, 3.5] # Battery threshold
+BTH = [4, 3.5]  # Battery threshold
 BR = (BS[0] - 2 * BOF[0]) / MAXB  # Width of battery indicator
 
-# Variables parameters
-# name, min, max, init, step, axes
-NCV = 5 # Number of custom variables
-V = {
-    "D1": ["Yaw ", 0, 360, 0 , 1, [0.69, 0.1, 0.25, 0.05]],  # Default
-    "D2": ["Height ", 0, 15, 0, 0.1, [0.69, 0.17, 0.25, 0.05]],  # Default
-    "P1": ["force x ", 0, 1, 0, 0.01, [0.69, 0.24, 0.25, 0.05]],  # P1 (Force_x)
-    "P2": ["z level ", 1, 3, 1, 1, [0.69, 0.31, 0.25, 0.05]],  # P2 (z_level)
-    "P3": ["t rotate ", 0, 10, 0, 0.01, [0.69, 0.38, 0.25, 0.05]],  # P3 (time_rotate)
-    "P4": ["angle ", -90, 90, 0, 0.2, [0.69, 0.45, 0.25, 0.05]],  # P4 (angle)
-    "P5": ["zigzag ", 0, 15, 5, 1, [0.69, 0.52, 0.25, 0.05]],  # P5 (zigzag)
-}
-
-
-
 # Distance parameters
-DISTANCE_NUM = 8
-DISTANCE_SIZE = [2.4, 0.5]
-MAX_DISTANCE = 5
-DISTANCE_RATIO = DISTANCE_SIZE[0] / MAX_DISTANCE
-DISTANCE_OFFSET = [0.1, 0.2, 0.1]  # [left, middle, right]
-DISTANCE_THRESHOLD = [2, 1.5, 1]
-DISTANCE_HEIGHT = [10.5, 11.5]
+DP = [0.2 * GS[0], 0.8 * GS[1]]  # Position (left bottom corner) of distance indicator
+DS = [0.5 * GS[0], 0.15 * GS[1]]  # Size of distance indicator
+MAXD = 500  # Maximum distance
+DOF = [0.05 * DS[0], 0.1 * DS[1]]  # Offset of battery indicator (horizontal, vertical)
+DR = (DS[0] - 2 * DOF[0]) / MAXD  # Width of battery indicator
+
+# Connection parameters
+CP = [0.1 * GS[0], 0.28 * GS[1]]  # Position (left bottom corner) of connection indicator
+COF = 0.02 * GS[0]  # Offset of connection indicator
+
+
+# Variables parameters
+NCV = 5  # Number of custom variables
+VA = 0.08  # Vertical spacing between sliders
+VH = 0.1  # Adjust as per your layout needs
+# name, min, max, init, step, axes
+V = {
+    "D1": ["Yaw ", -180, 180, 0, 1],
+    "D2": ["Height ", 0, 15, 0, 0.1],
+    "P1": ["force x ", 0, 1, 0, 0.01],
+    "P2": ["z level ", 1, 3, 1, 1],
+    "P3": ["t rotate ", 0, 10, 0, 0.01],
+    "P4": ["angle ", -90, 90, 0, 0.2],
+    "P5": ["zigzag ", 0, 15, 5, 1],
+}
+# Update the Y-coordinate for each slider dynamically
+for i, key in enumerate(V.keys()):
+    V[key].append([0.69, VH + i * VA, 0.25, 0.06])
+
+# Button parameters
+UCV = 3  # Number of custom buttons
+UA = 0.08 # Vertical spacing between buttons
+U = {
+    "B1": ["Send", C["b"]],
+    "B2": ["Reset", C["o"]],
+    "B3": ["Close", C["r"]],
+}
+# Update the Y-coordinate for each button dynamically
+UH = VH + len(V) * VA  # Adjust the additional offset as needed
+for i, key in enumerate(U.keys()):
+    U[key].append([0.69, UH + i * UA, 0.25, 0.06])
+
+# Now you can use the 'variables' and 'B' dictionaries to create sliders and buttons
