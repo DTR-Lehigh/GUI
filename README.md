@@ -12,4 +12,4 @@ WORK IN PROGRESS
 ## simpleGUI V3
 WORK IN PROGRESS
 
-![simpleGUI_V3](/Figures/simpleGUI_V3.png)
+![simpleGUI_V3](/GUI/Figures/simpleGUI_V3.png)
