@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-11 14:47:43
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-11 17:09:49
+LastEditTime : 2023-11-11 18:51:58
 FilePath     : /GUI/SimpleGUI_V3/simpleGUI.py
 Description  : The GUI for bicopter control V3
 """
@@ -21,7 +21,7 @@ class SimpleGUI:
         self.fig.patch.set_facecolor(C["k"])  # Set background color
         self.ax.set_xlim(0, GS[0])
         self.ax.set_ylim(0, GS[1])
-        self.ax.set_aspect("equal", "box")  # Set aspect ratio
+        self.ax.set_aspect("equal", "datalim")  # Set aspect ratio
         self.ax.set_xticks([])  # Remove x ticks
         self.ax.set_yticks([])  # Remove y ticks
         self.ax.axis("off")  # Remove axis

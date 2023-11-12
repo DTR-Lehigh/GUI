@@ -2,8 +2,8 @@
 Author       : Hanqing Qi
 Date         : 2023-11-07 15:20:18
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-09 18:15:22
-FilePath     : /GUI/simpleGUI.py
+LastEditTime : 2023-11-11 19:00:27
+FilePath     : /GUI/SimpleGUI_V1/simpleGUI.py
 Description  : The GUI for bicopter control
 """
 
@@ -136,35 +136,7 @@ class SimpleGUI:
             self.des_yaw += des_yaw
         self.cur_height, self.des_height, self.distance, self.roi, self.batlevel, self.connection = cur_height, des_height, distance, roi, batlevel, connection
 
-        # Update the yaw circle
-        cur_x, cur_y = angle_to_coordinates(self, self.cur_yaw + self.yaw_offset)
-        des_x, des_y = angle_to_coordinates(self, self.des_yaw + self.yaw_offset)
-        self.current_yaw = self.ax.arrow(
-            self.circle.center[0],
-            self.circle.center[1],
-            cur_x,
-            cur_y,
-            head_width=0.2,
-            head_length=0.3,
-            fc=COLORS["green"],
-            ec=COLORS["green"],
-            linewidth=3,
-            zorder=2,
-        )
-        self.desired_yaw = self.ax.arrow(
-            self.circle.center[0],
-            self.circle.center[1],
-            des_x,
-            des_y,
-            head_width=0.2,
-            head_length=0.3,
-            fc=COLORS["red"],
-            ec=COLORS["red"],
-            linewidth=3,
-            zorder=3,
-        )
-        update_yaw_offset(self, self.yaw_offset)
-
+       
         # Update the heights
         self.cur_height_bar[0].set_height((cur_height) / CURRENT_HEIGHT_BAR[1] if (cur_height) > 0 else 0)
         self.des_height_bar[0].set_height((des_height + self.height_offset) / DESIRED_HEIGHT_BAR[1] if (des_height + self.height_offset) > 0 else 0)

@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-11 14:47:43
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-11 17:10:41
+LastEditTime : 2023-11-12 13:53:58
 FilePath     : /GUI/SimpleGUI_V3/simpleGUIutils.py
 Description  : Some functions for the simpleGUI V3  
 """
@@ -21,24 +21,32 @@ def init_yaw(self) -> None:
     center_dot = self.ax.scatter(YC[0], YC[1], s=40, color=C["w"], zorder=3)
     self.ax.add_patch(patches.Circle(YC, YR, fill=False, color=C["w"], linewidth=LW, zorder=1))
     add_ticks_circle(self)
-    self.current_yaw = self.ax.arrow(YC[0], YC[1], 0, 0.8 * YR, head_width=0.1 * YR, head_length=0.2 * YR, fc=C["g"], ec=C["g"], linewidth=LW, zorder=2)
+    self.current_yaw = self.ax.arrow(YC[0], YC[1], 0, 0.8 * YR, head_width=0.1 * YR, head_length=0.2 * YR, fc=C["b"], ec=C["b"], linewidth=LW, zorder=2)
     self.desired_yaw = self.ax.arrow(YC[0], YC[1], 0, 0.8 * YR, head_width=0.1 * YR, head_length=0.2 * YR, fc=C["r"], ec=C["r"], linewidth=LW, zorder=2)
     # Text
     self.ax.text(YC[0], YP[0], "Yaw", fontsize=FS, color=C["w"], ha="center", va="center")  # Yaw
-    self.current_yaw_tx = self.ax.text(YC[0], (YS[1] - YOF[1]) * 1.1, "Current: 0˚", fontsize=FS, color=C["g"], ha="center", va="center")  # Current yaw text
+    self.current_yaw_tx = self.ax.text(YC[0], (YS[1] - YOF[1]) * 1.1, "Current: 0˚", fontsize=FS, color=C["b"], ha="center", va="center")  # Current yaw text
     self.desired_yaw_tx = self.ax.text(YC[0], (YS[1] - YOF[1]) * 1.01, "Desired: 0˚", fontsize=FS, color=C["r"], ha="center", va="center")  # Desired yaw text
+    # Value
+    self.des_yaw = 0  # Desired yaw
+    self.cur_yaw = 0  # Current yaw
 
 
 # Update the yaw circle
-def update_yaw(self, cur_yaw: float, des_yaw: float) -> None:
+def update_yaw(self, cur_yaw: float, des_yaw: float, slider: bool = True) -> None:
     x1, y1 = YR * 0.8 * np.cos(cur_yaw), YR * 0.8 * np.sin(cur_yaw)  # Current yaw arrow head coordinates
     x2, y2 = YR * 0.8 * np.cos(des_yaw), YR * 0.8 * np.sin(des_yaw)  # Desired yaw arrow head coordinates
     self.current_yaw.remove()  # Remove the old arrow
     self.desired_yaw.remove()  # Remove the old arrow
-    self.current_yaw = self.ax.arrow(YC[0], YC[1], x1, y1, head_width=0.1 * YR, head_length=0.2 * YR, fc=C["g"], ec=C["g"], linewidth=LW, zorder=2)
+    self.current_yaw = self.ax.arrow(YC[0], YC[1], x1, y1, head_width=0.1 * YR, head_length=0.2 * YR, fc=C["b"], ec=C["b"], linewidth=LW, zorder=2)
     self.desired_yaw = self.ax.arrow(YC[0], YC[1], x2, y2, head_width=0.1 * YR, head_length=0.2 * YR, fc=C["r"], ec=C["r"], linewidth=LW, zorder=2)
     self.current_yaw_tx.set_text(f"Current: {np.degrees(cur_yaw):.2f}˚")  # Current yaw
     self.desired_yaw_tx.set_text(f"Desired: {np.degrees(des_yaw):.2f}˚")  # Desired yaw
+    self.cur_yaw = np.degrees(cur_yaw)  # Current yaw
+    self.des_yaw = np.degrees(des_yaw)  # Desired yaw
+    # Update the slider value
+    if slider:
+        self.sliders[0].set_val(self.des_yaw)
 
 
 # Add ticks to the circle
@@ -64,26 +72,34 @@ def init_height(self) -> None:
     # self.ax.add_patch(patches.Rectangle(HP, HS[0], HS[1], linewidth=0.5, edgecolor=C["w"], fill=False, zorder=1))
     cur_bar_center = HP[0] + HOF[0] + HW * 0.5
     des_bar_center = HP[0] + HOF[0] + HW * 1.5
-    self.cur_height_bar = self.ax.bar(cur_bar_center, 0, HW, color=C["g"], bottom=HOF[1])
+    self.cur_height_bar = self.ax.bar(cur_bar_center, 0, HW, color=C["b"], bottom=HOF[1])
     add_ticks_bar(self, HP[0] + HOF[0])
     self.des_height_bar = self.ax.bar(des_bar_center, 0, HW, color=C["r"], bottom=HOF[1])
     add_ticks_bar(self, HP[0] + HOF[0] + HW)
     # Text
     self.ax.text(HP[0] + HOF[0] + HW, HP[1] + HS[1] + 0.01, "Height", fontsize=FS, color=C["w"], ha="center", va="center", zorder=1)  # Height
-    self.ax.text(cur_bar_center, HP[1] - 0.01, "Cur", fontsize=FS, color=C["g"], ha="center", va="center")  # Current height
+    self.ax.text(cur_bar_center, HP[1] - 0.01, "Cur", fontsize=FS, color=C["b"], ha="center", va="center")  # Current height
     self.ax.text(des_bar_center, HP[1] - 0.01, "Des", fontsize=FS, color=C["r"], ha="center", va="center")  # Desired height
-    self.cur_height_tx = self.ax.text(cur_bar_center, HP[1] + HOF[1] + 0.01, 0, fontsize=FS, color=C["g"], ha="center", va="bottom", zorder=3)  # Current height
+    self.cur_height_tx = self.ax.text(cur_bar_center, HP[1] + HOF[1] + 0.01, 0, fontsize=FS, color=C["b"], ha="center", va="bottom", zorder=3)  # Current height
     self.des_height_tx = self.ax.text(des_bar_center, HP[1] + HOF[1] + 0.01, 0, fontsize=FS, color=C["r"], ha="center", va="bottom", zorder=3)  # Desired height
+    # Value
+    self.des_height = 0  # Desired height
+    self.cur_height = 0  # Current height
 
 
 # Update the height bars
-def update_height(self, cur_height: float, des_height: float) -> None:
+def update_height(self, cur_height: float, des_height: float, slider: bool = True) -> None:
     self.cur_height_bar[0].set_height((cur_height) * HR if (cur_height) > 0 else 0)
     self.des_height_bar[0].set_height((des_height) * HR if (des_height) > 0 else 0)
     self.cur_height_tx.set_text(f"{cur_height:.2f}")  # Current height
     self.cur_height_tx.set_position((HP[0] + HOF[0] + HW * 0.5, HP[1] + HOF[1] + (cur_height) * HR + 0.01))  # Current height
     self.des_height_tx.set_text(f"{des_height:.2f}")  # Desired height
     self.des_height_tx.set_position((HP[0] + HOF[0] + HW * 1.5, HP[1] + HOF[1] + (des_height) * HR + 0.01))  # Desired height
+    self.cur_height = cur_height  # Current height
+    self.des_height = des_height  # Desired height
+    # Update the slider value
+    if slider:
+        self.sliders[1].set_val(self.des_height)
 
 
 # Add ticks to the height bar
@@ -111,27 +127,52 @@ def add_ticks_bar(self, left_edge: float) -> None:
 # Initialize the variables sliders
 def init_variables(self) -> None:
     # Plot the debug rectangle of the variables sliders
-    self.ax.add_patch(patches.Rectangle(VP, VS[0], VS[1], linewidth=0.5, edgecolor=C["w"], fill=False, zorder=1))
+    # self.ax.add_patch(patches.Rectangle(VP, VS[0], VS[1], linewidth=0.5, edgecolor=C["w"], fill=False, zorder=1))
+    # Sliders
+    self.variables = [0] * NCV  # List to store the created slider widgets
+    self.sliders = []  # List to store the created slider widgets
+    for key, value in V.items():
+        # Extract the slider parameters from the value list
+        label, min_val, max_val, init_val, val_step, slider_position = value
 
+        # Create an axes instance for the slider
+        axes = plt.axes(slider_position)
 
-def init_circles(self, add_tick: bool = True) -> None:
-    """
-    @description: Initialize the yaw circle
-    @param       {*} self:
-    @param       {bool} add_tick: If True, add ticks to the circle
-    @return      {*} None
-    """
-    center_x, center_y = 2 + GUI_SIZE[1] / 2, GUI_SIZE[1] / 2
-    dot = self.ax.scatter(center_x, center_y, s=100, color=COLORS["white"], zorder=10)
-    radius = GUI_SIZE[1] / 2
-    self.circle = plt.Circle((center_x, center_y), radius, fill=False, color=COLORS["white"], linewidth=3, zorder=1)
-    self.ax.add_patch(self.circle)
-    if add_tick:
-        add_ticks_circle(self, center_x, center_y, radius)  # Pass the center and radius to the method
-    self.current_yaw = self.ax.arrow(center_x, center_y, 0, 0, head_width=0.2, head_length=0.3, fc=COLORS["green"], ec=COLORS["green"], linewidth=3)
-    self.desired_yaw = self.ax.arrow(center_x, center_y, 0, 0, head_width=0.2, head_length=0.3, fc=COLORS["red"], ec=COLORS["red"], linewidth=3)
-    # Small dot to indicate connection
-    self.connection_indicator = self.ax.scatter(center_x - 1, -0.3, s=80, color=COLORS["red"])
+        # Create the slider
+        slider = widgets.Slider(ax=axes, label=label, valmin=min_val, valmax=max_val, valinit=init_val, orientation="horizontal", initcolor=C["r"], track_color=C["a"], valstep=val_step, zorder=2)
+
+        # Set additional slider properties
+        slider.label.set_color(C["r"] if key[0] == "D" else C["g"])
+        slider.label.set_fontsize(FS)
+        slider.valtext.set_color(C["r"] if key[0] == "D" else C["g"])
+        slider.poly.set_color(C["r"] if key[0] == "D" else C["g"])
+
+        # Add the slider to the list
+        self.sliders.append(slider)
+
+        def slider_update(val, slider_ref):
+            # slider_ref is a reference to the slider that was changed.
+            label = slider_ref.label.get_text()
+            if label == "Yaw ":
+                self.des_yaw = val
+                update_yaw(self, np.radians(self.cur_yaw), np.radians(self.des_yaw), slider=False)
+            elif label == "Height ":
+                self.des_height = val
+                update_height(self, self.cur_height, self.des_height, slider=False)
+            elif label == "force x ":
+                self.variables[0] = val
+            elif label == "z level ":
+                self.variables[1] = val
+            elif label == "t rotate ":
+                self.variables[2] = val
+            elif label == "angle ":
+                self.variables[3] = val
+            elif label == "zigzag ":
+                self.variables[4] = val
+
+        # Attach the callback with label identification
+        for slider in self.sliders:
+            slider.on_changed(lambda val, s=slider: slider_update(val, s))
 
 
 def init_bars(self, add_tick: bool = True) -> None:
