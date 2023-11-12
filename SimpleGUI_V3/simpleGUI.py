@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-11 14:47:43
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-12 15:56:55
+LastEditTime : 2023-11-12 16:30:56
 FilePath     : /GUI/SimpleGUI_V3/simpleGUI.py
 Description  : The GUI for bicopter control V3
 """
@@ -50,10 +50,10 @@ if __name__ == "__main__":
         mygui.update(
             cur_yaw=math.pi * i / 100,
             des_yaw=- math.pi * i / 100,
-            cur_height=10 * i / 100,
-            des_height=10 * (1 - i / 100),
+            cur_height=15 * i / 100,
+            des_height=15 * (1 - i / 100),
             battery=4.5 * i / 100,
-            distance=500 * i / 100,
+            distance=400 * i / 100,
             connection_status=True,
         )
         plt.pause(0.05)
