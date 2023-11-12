@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-11 14:47:43
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-12 13:53:58
+LastEditTime : 2023-11-12 14:56:05
 FilePath     : /GUI/SimpleGUI_V3/simpleGUIutils.py
 Description  : Some functions for the simpleGUI V3  
 """
@@ -33,7 +33,7 @@ def init_yaw(self) -> None:
 
 
 # Update the yaw circle
-def update_yaw(self, cur_yaw: float, des_yaw: float, slider: bool = True) -> None:
+def update_yaw(self, cur_yaw: float=0, des_yaw: float=0, slider: bool = True) -> None:
     x1, y1 = YR * 0.8 * np.cos(cur_yaw), YR * 0.8 * np.sin(cur_yaw)  # Current yaw arrow head coordinates
     x2, y2 = YR * 0.8 * np.cos(des_yaw), YR * 0.8 * np.sin(des_yaw)  # Desired yaw arrow head coordinates
     self.current_yaw.remove()  # Remove the old arrow
@@ -88,7 +88,7 @@ def init_height(self) -> None:
 
 
 # Update the height bars
-def update_height(self, cur_height: float, des_height: float, slider: bool = True) -> None:
+def update_height(self, cur_height: float=0, des_height: float=0, slider: bool = True) -> None:
     self.cur_height_bar[0].set_height((cur_height) * HR if (cur_height) > 0 else 0)
     self.des_height_bar[0].set_height((des_height) * HR if (des_height) > 0 else 0)
     self.cur_height_tx.set_text(f"{cur_height:.2f}")  # Current height
@@ -175,44 +175,37 @@ def init_variables(self) -> None:
             slider.on_changed(lambda val, s=slider: slider_update(val, s))
 
 
-def init_bars(self, add_tick: bool = True) -> None:
-    """
-    @description: Initializes the bars
-    @param       {*} self:
-    @param       {bool} add_tick: If True, add ticks to the bars
-    @return      {*}
-    """
-    # Current height bar
-    self.cur_height_bar = self.ax.bar(CURRENT_HEIGHT_BAR[0] + BAR_WIDTH / 2, 0, BAR_WIDTH, color=COLORS["green"], bottom=0)
-    # Desired height bar
-    self.des_height_bar = self.ax.bar(DESIRED_HEIGHT_BAR[0] + BAR_WIDTH / 2, 0, BAR_WIDTH, color=COLORS["red"], bottom=0)
-    # Wall sensor bar
-    self.wall_sensor_bar = self.ax.bar(WALL_SENSOR_BAR[0] + BAR_WIDTH / 2, 0, BAR_WIDTH, color=COLORS["purple"], bottom=0)
-    if add_tick:
-        add_ticks_bar(self, CURRENT_HEIGHT_BAR[0])
-        add_ticks_bar(self, DESIRED_HEIGHT_BAR[0])
-        add_ticks_bar(self, WALL_SENSOR_BAR[0])
-    self.current_height_value = self.ax.text(CURRENT_HEIGHT_BAR[0], 0, "", fontsize=12, color=COLORS["white"])
-    self.desired_height_value = self.ax.text(DESIRED_HEIGHT_BAR[0], 0, "", fontsize=12, color=COLORS["white"])
-    self.distance_value = self.ax.text(WALL_SENSOR_BAR[0], 0, "", fontsize=12, color=COLORS["white"])
-    # Battery indicator
-    self.battery_indicator = self.ax.barh(2, 0, 0.5, color=COLORS["green"], left=BATTARY_INDICATOR[0], zorder=2)
+# Initialize the battery indicator
+def init_battery(self) -> None:
+    # Plot the debug rectangle of the battery indicator
+    # self.ax.add_patch(patches.Rectangle(BP, BS[0], BS[1], linewidth=0.5, edgecolor=C["w"], fill=False, zorder=1))
+    # Plot the battery background
+    self.ax.add_patch(patches.Rectangle((BP[0] + BOF[0], BP[1] + BOF[1]), BS[0] - 2 * BOF[0], BS[1] - 2 * BOF[1], facecolor = C["a"], fill=True, zorder=1))
+    # Plot the battery level indicator
+    self.battery_indicator = self.ax.barh(BP[1] + BS[1]/2, 0, BS[1]-2*BOF[1], color=C["g"], left=BP[0] + BOF[0], zorder=2)
+    # Plot the battery rectangle
+    self.ax.add_patch(patches.Rectangle((BP[0] + BOF[0], BP[1] + BOF[1]), BR * MAXB, BS[1] - 2 * BOF[1], edgecolor = C["w"], fill=False, zorder=3))
+    # Text
+    self.ax.text(BP[0] + BS[0]/2, BP[1] + BS[1], "Battery", fontsize=FS, color=C["w"], ha="center", va="bottom", zorder=1)  # Battery
+    self.battery_tx = self.ax.text(BP[0] + BS[0]/2, BP[1] + BS[1]/2, "?V", fontsize=FS, color=C["w"], ha="center", va="center", zorder=3)  # Battery level
+    # Value
+    self.battry_level = 0  # Battery level
 
 
-def init_rects(self):
-    # Battery indicator
-    self.bat_rect = patches.Rectangle((BATTARY_INDICATOR[0], 1.75), 1.6, 0.5, linewidth=1, edgecolor=None, facecolor=COLORS["gray"], zorder=1)
-    self.ax.add_patch(self.bat_rect)
-    # Frame
-    frame_w = FRAME_SIZE[0] / FRAME_OFFSET[1]
-    self.frame_rect = patches.Rectangle((FRAME_OFFSET[0], 0), frame_w, GUI_SIZE[1], linewidth=1.5, edgecolor=COLORS["white"], facecolor="none")
-    self.ax.add_patch(self.frame_rect)
-    add_ticks_rect(self)
-    # ROI
-    self.roi_rect = patches.Rectangle((FRAME_OFFSET[0], 0), 0, 0, linewidth=1.5, edgecolor=COLORS["yellow"], facecolor="none")
-    # self.detect_rect = patches.Rectangle((0, 0), 0, 0, linewidth=2, edgecolor=COLORS["pink"], facecolor="none")\
-    self.ax.add_patch(self.roi_rect)
-
+# Update the battery indicator
+def update_battery(self, battry_level: float=0) -> None:
+    if battry_level > MAXB:
+        battry_level = MAXB
+    self.battry_level = battry_level
+    self.battery_indicator[0].set_width(self.battry_level * BR)
+    bar_color = C["g"]
+    if self.battry_level <= BTH[1]:
+        bar_color = C["r"]
+    elif self.battry_level <= BTH[0]:
+        bar_color = C["o"]
+    self.battery_indicator[0].set_color(bar_color)
+    self.battery_tx.set_text(f"{self.battry_level:.2f}V")  # Battery level
+    self.battery_tx.set_color(C["k"])
 
 def init_texts(self):
     # Height

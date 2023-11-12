@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-11 14:54:50
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-11 18:57:59
+LastEditTime : 2023-11-12 14:48:33
 FilePath     : /GUI/SimpleGUI_V3/simpleGUIparams.py
 Description  : Parameters for SimpleGUI V3
 """
@@ -23,7 +23,7 @@ C = {
 }
 
 # GUI parameters
-GS = [6, 4]  # GUI size
+GS = [6, 3.5]  # GUI size
 FS = 10  # Font size
 LW = 1.5  # Line width
 
@@ -43,6 +43,14 @@ HH = HS[1] - 2 * HOF[1]
 MAXH = 15  # Maximum height
 HR = (HS[1] - 2 * HOF[1]) / MAXH  # Height ratio
 
+# Battery parameters
+BP = [0, 0.8 * GS[1]] # Position (left bottom corner) of battery indicator
+BS = [0.2 * GS[0] , 0.15 * GS[1]] # Size of battery indicator
+MAXB = 4.5 # Maximum battery
+BOF = [0.05 * BS[0], 0.1 * BS[1]]  # Offset of battery indicator (horizontal, vertical)
+BTH = [4, 3.5] # Battery threshold
+BR = (BS[0] - 2 * BOF[0]) / MAXB  # Width of battery indicator
+
 # Variables parameters
 # name, min, max, init, step, axes
 NCV = 5 # Number of custom variables
@@ -57,14 +65,6 @@ V = {
 }
 
 
-# Battery parameters
-BATTERY_NUM = 8
-BATTERY_SIZE = [1.05, 0.5]
-MAX_BATTERY = 4.6
-BATTERY_RATIO = BATTERY_SIZE[0] / MAX_BATTERY
-BATTERY_OFFSET = [0.1, 0.2, 0.1]  # [left, middle, right]
-BATTERY_THRESHOLD = [4, 3.7, 3.4]
-BATTERY_HEIGHT = 0.5
 
 # Distance parameters
 DISTANCE_NUM = 8

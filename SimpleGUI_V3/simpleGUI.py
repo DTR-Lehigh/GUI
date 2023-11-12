@@ -2,7 +2,7 @@
 Author       : Hanqing Qi
 Date         : 2023-11-11 14:47:43
 LastEditors  : Hanqing Qi
-LastEditTime : 2023-11-11 18:51:58
+LastEditTime : 2023-11-12 14:54:57
 FilePath     : /GUI/SimpleGUI_V3/simpleGUI.py
 Description  : The GUI for bicopter control V3
 """
@@ -29,10 +29,12 @@ class SimpleGUI:
         init_yaw(self)
         init_height(self)
         init_variables(self)
+        init_battery(self)
 
     def update(self):
-        update_yaw(self, math.pi * 0.5,  math.pi * 1.0)
-        update_height(self, 5, 10)
+        update_yaw(self, math.pi * 0.5,  math.pi * 2.0)
+        update_height(self, 5, 11)
+        update_battery(self, 4.5)
 
 
 if __name__ == "__main__":
